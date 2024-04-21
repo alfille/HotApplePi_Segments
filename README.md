@@ -9,9 +9,11 @@ This is the Javascript App for calculating boxes with maximum volume.
 
 You can choose:
 
-* Algotithm (a custom gradient or a slow Genetic)
+* Algorithm (a custom gradient or a slow Genetic)
 * Length of box (relative to width)
 * Number of segments (100 is a good choice)
 * Iterations
 
-  
+By Paul H Alfille 2024
+MIT License
+Pure Javascript with Web Workers
