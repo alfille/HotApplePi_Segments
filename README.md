@@ -5,6 +5,8 @@ See [Hot Apple Pi](https://github.com/alfille/HotApplePi)
 
 This is the Javascript App to calculating boxes with maximum volume.
 
+![Folded box profile](L1_folded.png)
+
 You can choose:
 
 * Algotithm (a custom gradient or a slow Genetic)
