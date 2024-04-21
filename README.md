@@ -1,8 +1,14 @@
 # HotApplePi_Segments
 Segment approximation for optimum Hot Apple Pi Box
 
+## Run it now
+[Live program](https://alfille.github.io/HotApplePi_Segments/)
+-- no downloads, no cookies, no ads
+
+## Background
 See [Hot Apple Pi](https://github.com/alfille/HotApplePi)
 
+## What is this?
 This is the Javascript App for calculating boxes with maximum volume.
 
 ![Folded box profile](L1_folded.png)
