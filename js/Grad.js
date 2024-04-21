@@ -99,7 +99,6 @@ class Offload {
 			}
 			offload.run() ;
 		} else if ( evt.data.seq == -1 ) {
-			console.log(evt.data.volume,evt.data.u) ;
 			const c = new CSV() ;
 			c.download(evt.data.volume,evt.data.u) ;
 		} else {
