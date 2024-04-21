@@ -9,7 +9,7 @@ Segment approximation for optimum Hot Apple Pi Box
 See [Hot Apple Pi](https://github.com/alfille/HotApplePi)
 
 ## What is this?
-This is the Javascript App for calculating boxes with maximum volume.
+This is the Javascript App for calculating Hot Apple Pie boxes with maximum volume.
 
 ![Folded box profile](L1_folded.png)
 
