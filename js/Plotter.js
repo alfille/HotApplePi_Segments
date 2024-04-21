@@ -66,6 +66,8 @@ onmessage = ( evt ) => {
 
 class CanvasType {
 	constructor(canvas) {
+		this.Xdim = 1.0 ;
+		this.Ydim = .4 ;
 		this.canvas = canvas ;
 		this.ctx=this.canvas.getContext("2d",{willReadFrequently:true,});
 		this.startX = 10 ;
@@ -73,6 +75,7 @@ class CanvasType {
 		this.lengX = this.canvas.width - 2* this.startX ;
 		this.lengY = this.canvas.height - 2* this.startY ;
 		this.ctx.globalAlpha = 1.0 ;
+		this.ctx.font="10px Arial" ;
 	}
 	
 	clear() {
@@ -80,26 +83,33 @@ class CanvasType {
 		this.ctx.fillRect(0,0,this.canvas.width,this.canvas.height) ;
 		this.ctx.strokeStyle = "lightgray" ;
 		this.ctx.lineWidth = 1 ;
-		for ( let i = 0; i <= 1 ; i += .1 ) {
+		for ( let i = 0; i <= this.Xdim ; i += .1 ) {
+			// grid
+			this.ctx.beginPath() ;
+			this.ctx.moveTo( this.pX(i),this.pY(0) ) ;
+			this.ctx.lineTo( this.pX(i),this.pY(this.Ydim) ) ;
+			this.ctx.stroke() ;
+		}
+		for ( let i = 0; i <= this.Ydim ; i += .1 ) {
 			// grid
 			this.ctx.beginPath() ;
 			this.ctx.moveTo( this.pX(0),this.pY(i) ) ;
-			this.ctx.lineTo( this.pX(1),this.pY(i) ) ;
+			this.ctx.lineTo( this.pX(this.Xdim),this.pY(i) ) ;
 			this.ctx.stroke() ;
-			this.ctx.beginPath() ;
-			this.ctx.moveTo( this.pX(i),this.pY(0) ) ;
-			this.ctx.lineTo( this.pX(i),this.pY(1) ) ;
-			this.ctx.stroke() ;
+		}
+		this.ctx.fillStyle = "gray" ;
+		for ( let i = .1; i <= this.Ydim ; i += .1 ) {
+			this.ctx.fillText(Number(i).toFixed(2).replace(/0$/,""),this.pX(0),this.pY(i))
 		}
 		this.copyImg() ;
 	}
 	
 	pX( x ) {
-		return x*this.lengX + this.startX ;
+		return x*this.lengX/this.Xdim + this.startX ;
 	} 
 	
 	pY( y ) {
-		return (1-y)*this.lengY + this.startY ;
+		return (this.Ydim-y)*this.lengY/this.Ydim + this.startY ;
 	}
 
 	curve(X,Y) {

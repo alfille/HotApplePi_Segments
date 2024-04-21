@@ -31,7 +31,6 @@ class Offload {
 		this.W.addEventListener("message", this.message, false ) ;
 		this.more = document.getElementById("More") ;
 		this.volume = document.getElementById("Volume") ;
-		this.P = new Worker("Plotter.js") ; // subworker
 		[ "Flat", "Folded" ] .forEach( f => {
 			const c = new WorkerCanvas( f ) ;
 			c.send(this.W) ;
