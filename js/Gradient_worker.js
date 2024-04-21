@@ -148,6 +148,10 @@ onmessage = ( evt ) => {
 			case "Folded":
 				run.W.postMessage({canvas:evt.data.canvas,type:evt.data.type},[evt.data.canvas]) ;
 				break ;
+			case "download":
+				// get data
+				postMessage({seq:-1,volume:run.gen.volume(),u:run.gen.profile()});
+				break ;
 			case "start":
 				Object.assign( Settings, evt.data ) ;
 				run.W.postMessage(evt.data);

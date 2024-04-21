@@ -15,6 +15,7 @@
 	  <label>Rounds: <input type="number" min="1" max="30" step="1" id="era" onchange="offload.getParameters()" size="10" title="Number of updates before pause"></label>
 	  <label>Status: <input type="button" onclick="offload.update_era()" id="More" title="Continue evolving" disabled></label>
 	  <label>Volume: <input type="text" value="0" id="Volume" readonly title="Volume of folded box"></label>
+	  <input type="button" onclick="offload.download()" id="Download" value="Download" title="Download as CSV file" disabled>
 	  <H2>Profile when flat</H2>
 	  <canvas height="252" width="600" id="Flat" style="border:1px solid grey"></canvas>
 	  <H2>Profile when folded</H2>	  
