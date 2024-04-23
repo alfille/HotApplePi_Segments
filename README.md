@@ -20,7 +20,7 @@ You can choose:
 * Number of segments (100 is a good choice)
 * Iterations
 
-## Background
+## Details
 
 [Theory and results](https://alfille.github.io/HotApplePi/segments.html)
 
