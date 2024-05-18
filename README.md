@@ -27,13 +27,13 @@ You can choose:
 * Iterations
 
 ### Optimizer
-![Fast Optimum](https://github.com/alfille/HotApplePi/src/images/optimum.gif)
+![Fast Optimum](https://github.com/alfille/HotApplePi/tree/main/src/images/optimum.gif)
 
 ### Designer
-![Draw](https://github.com/alfille/HotApplePi/src/images/design.gif)
+![Draw](https://github.com/alfille/HotApplePi/tree/main/src/images/design.gif)
 
 ### Visualizer
-![Visulalizer](https://github.com/alfille/HotApplePi/src/images/spin.gif)
+![Visulalizer](https://github.com/alfille/HotApplePi/tree/main/src/images/spin.gif)
 
 ## Details
 
