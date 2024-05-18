@@ -27,7 +27,7 @@ You can choose:
 * Iterations
 
 ### Optimizer
-![Fast Optimum](https://github.com/alfille/HotApplePi/tree/main/src/images/optimum.gif?raw=true)
+![Fast Optimum](https://raw.githubusercontent.com/alfille/HotApplePi/main/src/images/optimum.gif)
 
 ### Designer
 ![Draw](https://github.com/alfille/HotApplePi/tree/main/src/images/design.gif?raw=true)
