@@ -30,10 +30,10 @@ You can choose:
 ![Fast Optimum](https://raw.githubusercontent.com/alfille/HotApplePi/main/src/images/optimum.gif)
 
 ### Designer
-![Draw](https://github.com/alfille/HotApplePi/tree/main/src/images/design.gif?raw=true)
+![Draw](https://raw.githubusercontent.com/alfille/HotApplePi/main/src/images/design.gif)
 
 ### Visualizer
-![Visulalizer](https://github.com/alfille/HotApplePi/tree/main/src/images/spin.gif?raw=true)
+![Visulalizer](https://raw.githubusercontent.com/alfille/HotApplePi/main/src/images/spin.gif)
 
 ## Details
 
