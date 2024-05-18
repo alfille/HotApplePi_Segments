@@ -2,8 +2,14 @@
 Segment approximation for optimum Hot Apple Pi Box
 
 ## Run it now
-[Live program](https://alfille.github.io/HotApplePi_Segments/)
--- no downloads, no cookies, no ads, no linked libraries
+   -- no downloads, no cookies, no ads, no linked libraries
+
+### Optimizer
+   [Live program](https://alfille.github.io/HotApplePi_Segments/index.html)
+
+### Designer
+   [Live program](https://alfille.github.io/HotApplePi_Segments/design.html)
+   Design the end-tab and see the resulting box
 
 ## Background
 See [Hot Apple Pi](https://github.com/alfille/HotApplePi)
@@ -19,6 +25,15 @@ You can choose:
 * Length of box (relative to width)
 * Number of segments (100 is a good choice)
 * Iterations
+
+### Optimizer
+![Fast Optimum](https://github.com/alfille/HotApplePi/src/images/optimum.gif)
+
+### Designer
+![Draw](https://github.com/alfille/HotApplePi/src/images/design.gif)
+
+### Visualizer
+![Visulalizer](https://github.com/alfille/HotApplePi/src/images/spin.gif)
 
 ## Details
 
