@@ -132,7 +132,7 @@ class Run {
 			this.gen.mutate() ;
 		}
 		// send note back to master
-		postMessage( {volume:this.gen.volume(), seq:this.seq } ) ;
+		postMessage( {volume:this.gen.volume(), u:this.gen.profile(), seq:this.seq } ) ;
 		// send data to plotter
 		this.W.postMessage({seq:this.seq,type:"continue",u:this.gen.profile()});
 	}
@@ -147,10 +147,6 @@ onmessage = ( evt ) => {
 			case "Flat":
 			case "Folded":
 				run.W.postMessage({canvas:evt.data.canvas,type:evt.data.type},[evt.data.canvas]) ;
-				break ;
-			case "download":
-				// get data
-				postMessage({seq:-1,volume:run.gen.volume(),u:run.gen.profile()});
 				break ;
 			case "start":
 				Object.assign( Settings, evt.data ) ;

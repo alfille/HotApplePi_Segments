@@ -12,7 +12,8 @@
 //   | u[i] - u[i+1] | <= 1/N
 
 var offload = null ;
-var cookie = null ;
+var pinhole = null ;
+var wire = null ;
 
 const Settings = {
 	N:		100, 	// number of segments
@@ -28,6 +29,9 @@ class Offload {
 		this.W = new Worker("js/GA_worker.js") ;
 		this.showParameters() ;
 		this.new_start = true ;
+		this.u = null ;
+		this.v = null ;
+		this.hide() ;
 		this.W.addEventListener("message", this.message, false ) ;
 		this.more = document.getElementById("More") ;
 		this.down = document.getElementById("Download") ;
@@ -62,6 +66,7 @@ class Offload {
 		this.more.disabled=true ;
 		this.down.disabled=true ;
 		if ( this.new_start ) {
+			this.hide() ;
 			this.volume.value=Number(0).toFixed(4) ;
 			this.seq += 1 ;
 			this.era_counter = 0 ;
@@ -74,23 +79,40 @@ class Offload {
 		}
 	}
 	
+	show() {
+		document.getElementById("threedee").hidden=false;
+	}
+			
+	hide() {
+		document.getElementById("threedee").hidden=true;
+		wire=null ;
+	}
+	
 	update_era() {
 		offload.era += Settings.era ;
 		offload.run() ;
 	}
 
 	download() {
-		this.W.postMessage({type:"download",seq:this.seq});
+		const c = new CSV() ;
+		c.download(this.v,this.u);
 	}
-		
+
 	message( evt ) {
 		// called-back -- must use explicit object
-		//console.log( "Window", evt, evt.data.seq );
 		if ( evt.data.seq == offload.seq ) {
-			offload.volume.value = evt.data.volume.toFixed(4) ;
+			offload.v = evt.data.volume ; // volume
+			offload.volume.value = offload.v.toFixed(4) ;
 			offload.more.value= offload.era_counter * Settings.generations ;
+			offload.u = evt.data.u ; // segments
 			// process data;
 			if ( offload.era_counter >= offload.era ) {
+				if ( wire == null ) {
+					wire = new Wire(offload.u) ;
+					offload.show() ;
+				} else {
+					wire.update(offload.u) ;
+				}
 				// this era for this current seq is done, don't send message until new Settings
 				offload.more.value= `${offload.era_counter * Settings.generations} More...` ;
 				offload.more.disabled=false ;
@@ -98,10 +120,6 @@ class Offload {
 				return ;
 			}
 			offload.run() ;
-		} else if ( evt.data.seq == -1 ) {
-			console.log(evt.data.volume,evt.data.u) ;
-			const c = new CSV() ;
-			c.download(evt.data.volume,evt.data.u) ;
 		} else {
 			offload.run() ;
 		}		
@@ -110,7 +128,8 @@ class Offload {
 
 onload = () => {
 	offload = new Offload() ;
-	//console.log("new offload");
+	pinhole = new Pinhole("C3D");
+	pinhole.buttons("D3D");
 	offload.run() ;
 }
 
@@ -126,6 +145,96 @@ class WorkerCanvas {
 	}
 }
 
+class Wire {
+	constructor(seg) {
+		this.rot_seg = 30 ;
+		//this.L = Settings.Lhat ;
+		this.L = .7 ;
+		this.segnumber=seg.length-1;
+		this.mode = () => this.Full3D() ;
+		this.update(seg) ;
+	}
+
+	update(seg) {
+		this.seg = seg ;
+		this.Xs() ;
+		this.mode() ;
+	}
+
+	Xs() {
+		let sum = 0. ;
+		const N1 = 1/this.segnumber**2 ;
+		let u0 = this.seg[0] ;
+		const X = this.seg.slice(1).map( u1 => {
+			sum += Math.sqrt(Math.max(0,N1-(u1-u0)**2)) ;
+			u0=u1;
+			return sum;
+		});
+		X.unshift(0);
+		this.X = X.map( x => x + (1-sum)/2 ) ; // centering
+	}
+
+	Full3D() {
+		this.mode = () => this.Full3D() ;
+		pinhole.clear();
+		pinhole.scale(.7*Math.sqrt(.5+this.L));
+		const reduced = Array.from( {length:this.rot_seg+1}, (_,i)=> Math.round((i*this.segnumber)/this.rot_seg)) ;
+		const Cx = (x) => x-.5 ; // center x
+		const Cy = (y) => this.L-y ; // Adjust for length
+		const Cz = (z) => z ; // NOP
+		const Jy = (y) => Cy(y)-.001 ; // just up to edge to give edge line priority 
+
+		// top and bottom
+		const top =    reduced.map( i => [ "drawLine", [ Cx(this.X[i]),  Jy(this.seg[i]),  Cz(this.seg[i]), Cx(this.X[i]), -Jy(this.seg[i]),  Cz(this.seg[i]) ] ]);
+		const bottom = reduced.map( i => [ "drawLine", [ Cx(this.X[i]),  Jy(this.seg[i]), -Cz(this.seg[i]), Cx(this.X[i]), -Jy(this.seg[i]), -Cz(this.seg[i]) ] ]);
+		pinhole.ops(    top.concat([["colorize",["blue"]]]) );
+		pinhole.ops( bottom.concat([["colorize",["blue"]]]) );
+		// sides
+		const side1 =  reduced.map( i => [ "drawLine", [ Cx(this.X[i]),  Jy(this.seg[i]),  Cz(this.seg[i]), Cx(this.X[i]),  Jy(this.seg[i]), -Cz(this.seg[i]) ] ]);
+		const side2 =  reduced.map( i => [ "drawLine", [ Cx(this.X[i]), -Jy(this.seg[i]),  Cz(this.seg[i]), Cx(this.X[i]), -Jy(this.seg[i]), -Cz(this.seg[i]) ] ]);
+		pinhole.ops( side1.concat([["colorize",["lightblue"]]]));
+		pinhole.ops( side2.concat([["colorize",["lightblue"]]]) );
+		// side edge
+		const end1t = this.seg.slice(1).map( (_,i) => [ "drawLine", [ Cx(this.X[i-1]),  Cy(this.seg[i-1]),  Cz(this.seg[i-1]), Cx(this.X[i]),  Cy(this.seg[i]),  Cz(this.seg[i]) ] ]);
+		const end1b = this.seg.slice(1).map( (_,i) => [ "drawLine", [ Cx(this.X[i-1]),  Cy(this.seg[i-1]), -Cz(this.seg[i-1]), Cx(this.X[i]),  Cy(this.seg[i]), -Cz(this.seg[i]) ] ]);
+		const end2t = this.seg.slice(1).map( (_,i) => [ "drawLine", [ Cx(this.X[i-1]), -Cy(this.seg[i-1]),  Cz(this.seg[i-1]), Cx(this.X[i]), -Cy(this.seg[i]),  Cz(this.seg[i]) ] ]);
+		const end2b = this.seg.slice(1).map( (_,i) => [ "drawLine", [ Cx(this.X[i-1]), -Cy(this.seg[i-1]), -Cz(this.seg[i-1]), Cx(this.X[i]), -Cy(this.seg[i]), -Cz(this.seg[i]) ] ]);
+		pinhole.ops( end1t.concat([["colorize",["red"]]]) );
+		pinhole.ops( end1b.concat([["colorize",["red"]]]) );
+		pinhole.ops( end2t.concat([["colorize",["red"]]]) );
+		pinhole.ops( end2b.concat([["colorize",["red"]]]) );
+		pinhole.turn( -5,0,3 ) ;
+	}
+
+	Quarter3D() {
+		this.mode = () => this.Quarter3D() ;
+		pinhole.clear();
+		pinhole.scale(1.2*Math.sqrt(.5+this.L));
+		const reduced = Array.from( {length:this.rot_seg+1}, (_,i)=> Math.round((i*this.segnumber)/this.rot_seg)) ;
+		const Cx = (x) => x-.5 ; // center x
+		const Cy = (y) => .5*this.L-y ; // Adjust for length
+		const Cz = (z) => z ; // NOP
+		const Jy = (y) => Cy(y)-.001 ; // just up to edge to give edge line priority 
+
+		// just half top
+		const top =    reduced.map( i => [ "drawLine", [ Cx(this.X[i]),  Jy(this.seg[i]),  Cz(this.seg[i]), Cx(this.X[i]), Jy(this.L),  Cz(this.seg[i]) ] ]);
+		pinhole.ops(    top.concat([["colorize",["blue"]]]) );
+		// 1 side
+		const side1 =  reduced.map( i => [ "drawLine", [ Cx(this.X[i]),  Jy(this.seg[i]),  Cz(this.seg[i]), Cx(this.X[i]),  Jy(this.seg[i]), Cz(0) ] ]);
+		pinhole.ops( side1.concat([["colorize",["lightblue"]]]));
+		// side edge
+		const end1t = this.seg.slice(1).map( (_,i) => [ "drawLine", [ Cx(this.X[i-1]),  Cy(this.seg[i-1]), Cz(this.seg[i-1]), Cx(this.X[i]),  Cy(this.seg[i]), Cz(this.seg[i]) ] ]);
+		const end1b = this.seg.slice(1).map( (_,i) => [ "drawLine", [ Cx(this.X[i-1]),  Cy(this.seg[i-1]), Cz(0),             Cx(this.X[i]),  Cy(this.seg[i]), Cz(0) ] ]);
+		const end2t = this.seg.slice(1).map( (_,i) => [ "drawLine", [ Cx(this.X[i-1]),  Cy(this.L),             Cz(this.seg[i-1]), Cx(this.X[i]),  Cy(this.L),           Cz(this.seg[i]) ] ]);
+		const end2b = [[ "drawLine", [ Cx(this.X[0]), Cy(this.L), Cz(0), Cx(this.X[this.segnumber]), Cy(this.L), Cz(0) ] ]];
+		pinhole.ops( end1t.concat([["colorize",["red"]]]) );
+		pinhole.ops( end1b.concat([["colorize",["lightblue"]]]) );
+		pinhole.ops( end2t.concat([["colorize",["blue"]]]) );
+		pinhole.ops( end2b.concat([["colorize",["blue"]]]) );
+		pinhole.turn( -2.3,0.3,0 ) ;
+	}
+}
+
 class CSV {
 	// create a CSV file with data and parameters
 
@@ -138,7 +247,6 @@ class CSV {
 		let u0 = this.u[0] ;
 		const X = this.u.slice(1).map( u1 => {
 			sum += Math.sqrt(N1-(u1-u0)**2) ;
-			//console.log(sum);
 			u0=u1;
 			return sum;
 		});

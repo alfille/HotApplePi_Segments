@@ -1,4 +1,5 @@
 <html>
+  <script src="js/pinhole_front.js"></script>
   <script src="js/Grad.js"></script>
   <head>
 	  <title>Hot Apple Pie Box Creator</title>
@@ -19,6 +20,20 @@
 	  <canvas height="252" width="600" id="Flat" style="border:1px solid grey"></canvas>
 	  <H2>Profile when folded</H2>	  
 	  <canvas height="252" width="600" id="Folded" style="border:1px solid grey"></canvas>
+	  <div id="threedee" hidden>
+		<H2>3D</H2>
+		<div style="display:flex">
+			<fieldset>
+				<legend>Display</legend>
+				<label><input type="radio" name="F_Q" onClick="wire.Full3D()" checked>Full</label>
+				<label><input type="radio" name="F_Q" onClick="wire.Quarter3D()">Quarter</label>
+			</fieldset>
+			<fieldset id="D3D">
+				<legend>Controls</legend>
+			</fieldset>
+		</div>
+		<canvas height="600" width="600" id="C3D" style="border:1px solid grey"></canvas>
+	  </div>
 	  <H2>Credits</H2>
 	  By Paul H Alfille, 2024, MIT license. <a href="https://github.com/alfille/HotApplePi_Segments" target="_blank">Project page</a>
   </body>

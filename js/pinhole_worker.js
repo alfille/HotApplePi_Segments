@@ -319,7 +319,7 @@ class Pinhole {
         let caps;
         let ccolor;
         const focal = Math.min(width, height) / 2;
-        const maybeDraw = (line) => {
+        const _maybeDraw = (line) => {
             const p1 = this._projectPoint(line.p1.x, line.p1.y, line.p1.z, width, height, focal, optsScale)
             const p2 = this._projectPoint(line.p2.x, line.p2.y, line.p2.z, width, height, focal, optsScale)
             const t1 = this._lineWidthAtZ(line.p1.z, focal) * optsLineWidth * line.scale;
@@ -355,7 +355,7 @@ class Pinhole {
                     const coords = [];
                     const seg = line.cfirst;
                     while (seg){
-                        seg.drawcoords = maybeDraw(seg);
+                        seg.drawcoords = _maybeDraw(seg);
                         if (!seg.drawcoords) {
                             throw("nil!");
                         }
@@ -396,7 +396,7 @@ class Pinhole {
                 c.closePath();
                 c.fill();
             } else {
-                maybeDraw(line);
+                _maybeDraw(line);
             }
         }
     }
@@ -472,7 +472,7 @@ class Pinhole {
     
     _lineWidthAtZ(z, f) {
 //        return ((z*-1 + 1) / 2) * f * 0.04;
-        return ((z*-1 + 1) / 2) * f * 0.01;
+        return ((1-z) / 2) * f * 0.01;
     }
     
     _lineAngle(x1, y1, x2, y2){
