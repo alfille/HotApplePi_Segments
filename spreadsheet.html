@@ -2,9 +2,9 @@
   <script src="js/pinhole_front.js"></script>
   <script src="js/Spreadsheet.js"></script>
   <head>
-	  <title>Hot Apple Pie Box Creator</title>
+	  <title>Hot Apple Pie Box Designer</title>
   </head>
-  <body bgcolor="lightblue">
+  <body bgcolor="lightyellow">
 	  <H2>Analyze a HotApplePi box from a file.</H2>
 	  <input type="file" id="CVSup" accept=".csv, .CSV" hidden>
 	  End profile from from your spreadsheet <button itype="button" onClick="Upload">CSV file</button>.<br>
@@ -13,17 +13,27 @@
 	  <H2>Parameters</H2>
 	  <label>Length: <input type="number" min="0" id="Lhat" onchange="offload.getParameters()" title="length of flattened box relative to width" ></label>
 	  <input type="button" onclick="offload.download()" id="Download" value="Download" title="Download as CSV file" disabled>
-	  <H2>Profile when flat</H2>
-	  <canvas height="252" width="600" id="Flat" style="border:1px solid grey"></canvas>
-	  <H2>Profile when folded</H2>	  
-	  <canvas height="252" width="600" id="Folded" style="border:1px solid grey"></canvas>
+	  <input type="button" onclick="design.download()" id="Download" value="Download" title="Download profile as CSV file">
+	  Button down in white area<br>
+	  <div id="RawDiv" hidden>
+		<H2>Folded</H2>
+		<canvas height="320" width="620" id="Raw" style="border:1px solid grey"></canvas>
+	  </div>
+	  <div id="FixedDiv" hidden>
+		<H2>Folded</H2>
+		<canvas height="320" width="620" id="Fixed" style="border:1px solid grey"></canvas>
+	  </div>
+	  <div id="FoldDiv" hidden>
+		<H2>Folded</H2>
+		<canvas height="320" width="620" id="Folded" style="border:1px solid grey"></canvas>
+	  </div>
 	  <div id="threedee" hidden>
 		<H2>3D</H2>
 		<div style="display:flex">
 			<fieldset>
 				<legend>Display</legend>
-				<label><input type="radio" name="F_Q" onClick="wire.Full3D()" checked>Full</label>
-				<label><input type="radio" name="F_Q" onClick="wire.Quarter3D()">Quarter</label>
+				<label><input type="radio" name="F_Q" onClick="design.folded.Full3D()" checked>Full</label>
+				<label><input type="radio" name="F_Q" onClick="design.folded.Quarter3D()">Quarter</label>
 			</fieldset>
 			<fieldset id="D3D">
 				<legend>Controls</legend>

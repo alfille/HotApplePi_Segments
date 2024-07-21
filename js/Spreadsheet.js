@@ -70,9 +70,9 @@ class Graph {
 	
 }
 
-class Design extends Graph {
+class Raw extends Graph {
 	constructor() {
-		super("Design");
+		super("Raw");
 		this.segnumber = 200 ;
 		this.canvas.addEventListener("mousedown", e => {
 			this.active = true;
@@ -190,6 +190,137 @@ class Design extends Graph {
 	}
 }
 
+class Fixed extends Graph {
+	constructor(seg) {
+		super("Fixed");
+		this.rot_seg = 30 ;
+		this.L = .6 ; // half length
+		this.seg = seg;
+		this.segnumber=seg.length-1;
+		this.clear();
+		this.Xs() ;
+		this.plot(); // folded plot
+		this.Full3D() ;
+	}
+
+	clear() {
+		this.grid();
+	}
+	
+	plot() {
+		this.ctx.strokeStyle="red";
+		this.ctx.lineWidth=2;
+		this.ctx.fillStyle="blue";
+		this.ctx.beginPath();
+		this.ctx.moveTo(this.screenX(this.X[0]),this.screenY(this.seg[0]));
+		this.X.slice(1).forEach( (x,i) => this.ctx.lineTo(this.screenX(x),this.screenY(this.seg[i])) );
+		this.ctx.stroke();
+		this.ctx.closePath();
+		this.ctx.fill();
+	}
+	
+	Xs() {
+		let sum = 0. ;
+		const N1 = 1/this.segnumber**2 ;
+		let u0 = this.seg[0] ;
+		const X = this.seg.slice(1).map( u1 => {
+			sum += Math.sqrt(Math.max(0,N1-(u1-u0)**2)) ;
+			//console.log(sum);
+			u0=u1;
+			return sum;
+		});
+		X.unshift(0);
+		this.X = X.map( x => x + (1-sum)/2 ) ; // centering
+	}
+
+	format_line(arr) {
+		return arr.map(a => typeof(a)=="number" ? Number(a) : `"${a}"`).join(',') + '\n' ;
+	}
+	
+    blob(blub) {
+        //htype the file type i.e. text/csv
+        const link = document.createElement("a");
+        link.download = `Designed.csv`;
+        link.href = window.URL.createObjectURL(blub);
+        link.style.display = "none";
+
+        document.body.appendChild(link);
+        link.click(); // press invisible button
+        
+        // clean up
+        // Add "delay" see: https://www.stefanjudis.com/snippets/how-trigger-file-downloads-with-javascript/
+        setTimeout( () => {
+            window.URL.revokeObjectURL(link.href) ;
+            document.body.removeChild(link) ;
+        });
+    }
+			
+	download() {
+		let x = this.Xs(this.seg) ;
+		let csv = this.format_line(["s","x","f(s)"]) +
+			this.seg.map( (u,i) => this.format_line( [ i/this.segnumber,x[i],u ] ) ).join('');
+		const blub = new Blob([csv], {type: 'text/csv'});
+		this.blob( blub ) ;
+	}
+	
+	Full3D() {
+		pinhole.clear();
+		pinhole.scale(.7*Math.sqrt(.5+this.L));
+		const reduced = Array.from( {length:this.rot_seg+1}, (_,i)=> Math.round((i*this.segnumber)/this.rot_seg)) ;
+		const Cx = (x) => x-.5 ; // center x
+		const Cy = (y) => this.L-y ; // Adjust for length
+		const Cz = (z) => z ; // NOP
+		const Jy = (y) => Cy(y)-.001 ; // just up to edge to give edge line priority 
+
+		// top and bottom
+		const top =    reduced.map( i => [ "drawLine", [ Cx(this.X[i]),  Jy(this.seg[i]),  Cz(this.seg[i]), Cx(this.X[i]), -Jy(this.seg[i]),  Cz(this.seg[i]) ] ]);
+		const bottom = reduced.map( i => [ "drawLine", [ Cx(this.X[i]),  Jy(this.seg[i]), -Cz(this.seg[i]), Cx(this.X[i]), -Jy(this.seg[i]), -Cz(this.seg[i]) ] ]);
+		pinhole.ops(    top.concat([["colorize",["blue"]]]) );
+		pinhole.ops( bottom.concat([["colorize",["blue"]]]) );
+		// sides
+		const side1 =  reduced.map( i => [ "drawLine", [ Cx(this.X[i]),  Jy(this.seg[i]),  Cz(this.seg[i]), Cx(this.X[i]),  Jy(this.seg[i]), -Cz(this.seg[i]) ] ]);
+		const side2 =  reduced.map( i => [ "drawLine", [ Cx(this.X[i]), -Jy(this.seg[i]),  Cz(this.seg[i]), Cx(this.X[i]), -Jy(this.seg[i]), -Cz(this.seg[i]) ] ]);
+		pinhole.ops( side1.concat([["colorize",["lightblue"]]]));
+		pinhole.ops( side2.concat([["colorize",["lightblue"]]]) );
+		// side edge
+		const end1t = this.seg.slice(1).map( (_,i) => [ "drawLine", [ Cx(this.X[i-1]),  Cy(this.seg[i-1]),  Cz(this.seg[i-1]), Cx(this.X[i]),  Cy(this.seg[i]),  Cz(this.seg[i]) ] ]);
+		const end1b = this.seg.slice(1).map( (_,i) => [ "drawLine", [ Cx(this.X[i-1]),  Cy(this.seg[i-1]), -Cz(this.seg[i-1]), Cx(this.X[i]),  Cy(this.seg[i]), -Cz(this.seg[i]) ] ]);
+		const end2t = this.seg.slice(1).map( (_,i) => [ "drawLine", [ Cx(this.X[i-1]), -Cy(this.seg[i-1]),  Cz(this.seg[i-1]), Cx(this.X[i]), -Cy(this.seg[i]),  Cz(this.seg[i]) ] ]);
+		const end2b = this.seg.slice(1).map( (_,i) => [ "drawLine", [ Cx(this.X[i-1]), -Cy(this.seg[i-1]), -Cz(this.seg[i-1]), Cx(this.X[i]), -Cy(this.seg[i]), -Cz(this.seg[i]) ] ]);
+		pinhole.ops( end1t.concat([["colorize",["red"]]]) );
+		pinhole.ops( end1b.concat([["colorize",["red"]]]) );
+		pinhole.ops( end2t.concat([["colorize",["red"]]]) );
+		pinhole.ops( end2b.concat([["colorize",["red"]]]) );
+		pinhole.turn( -5,0,3 ) ;
+	}
+
+	Quarter3D() {
+		pinhole.clear();
+		pinhole.scale(1.2*Math.sqrt(.5+this.L));
+		const reduced = Array.from( {length:this.rot_seg+1}, (_,i)=> Math.round((i*this.segnumber)/this.rot_seg)) ;
+		const Cx = (x) => x-.5 ; // center x
+		const Cy = (y) => .5*this.L-y ; // Adjust for length
+		const Cz = (z) => z ; // NOP
+		const Jy = (y) => Cy(y)-.001 ; // just up to edge to give edge line priority 
+
+		// just half top
+		const top =    reduced.map( i => [ "drawLine", [ Cx(this.X[i]),  Jy(this.seg[i]),  Cz(this.seg[i]), Cx(this.X[i]), Jy(this.L),  Cz(this.seg[i]) ] ]);
+		pinhole.ops(    top.concat([["colorize",["blue"]]]) );
+		// 1 side
+		const side1 =  reduced.map( i => [ "drawLine", [ Cx(this.X[i]),  Jy(this.seg[i]),  Cz(this.seg[i]), Cx(this.X[i]),  Jy(this.seg[i]), Cz(0) ] ]);
+		pinhole.ops( side1.concat([["colorize",["lightblue"]]]));
+		// side edge
+		const end1t = this.seg.slice(1).map( (_,i) => [ "drawLine", [ Cx(this.X[i-1]),  Cy(this.seg[i-1]), Cz(this.seg[i-1]), Cx(this.X[i]),  Cy(this.seg[i]), Cz(this.seg[i]) ] ]);
+		const end1b = this.seg.slice(1).map( (_,i) => [ "drawLine", [ Cx(this.X[i-1]),  Cy(this.seg[i-1]), Cz(0),             Cx(this.X[i]),  Cy(this.seg[i]), Cz(0) ] ]);
+		const end2t = this.seg.slice(1).map( (_,i) => [ "drawLine", [ Cx(this.X[i-1]),  Cy(this.L),             Cz(this.seg[i-1]), Cx(this.X[i]),  Cy(this.L),           Cz(this.seg[i]) ] ]);
+		const end2b = [[ "drawLine", [ Cx(this.X[0]), Cy(this.L), Cz(0), Cx(this.X[this.segnumber]), Cy(this.L), Cz(0) ] ]];
+		pinhole.ops( end1t.concat([["colorize",["red"]]]) );
+		pinhole.ops( end1b.concat([["colorize",["lightblue"]]]) );
+		pinhole.ops( end2t.concat([["colorize",["blue"]]]) );
+		pinhole.ops( end2b.concat([["colorize",["blue"]]]) );
+		pinhole.turn( -2.3,0.3,0 ) ;
+	}
+}
 class Folded extends Graph {
 	constructor(seg) {
 		super("Folded");
@@ -327,7 +458,7 @@ function Upload() {
 }
 
 onload = () => {
-	design = new Design() ;
+	design = new Raw() ;
 	pinhole = new Pinhole("C3D");
 	pinhole.buttons("D3D");
 }
