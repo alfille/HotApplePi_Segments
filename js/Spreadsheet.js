@@ -13,6 +13,15 @@
 
 var design = null ;
 
+class InputFile {
+	constructor() {
+		this.Width = 1.;
+		this.Points = null;
+		this.Mirror = false;
+	}
+}
+
+
 class Graph {
 	constructor(name) {
 		this.canvas = document.getElementById(name);

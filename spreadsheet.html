@@ -6,10 +6,12 @@
   </head>
   <body bgcolor="lightyellow">
 	  <H2>Analyze a HotApplePi box from a file.</H2>
-	  <input type="file" id="CVSup" accept=".csv, .CSV" hidden>
-	  End profile from from your spreadsheet <button itype="button" onClick="Upload">CSV file</button>.<br>
 	  See <a href="https://github.com/alfille/HotApplePi" target="_blank">Hot Apple Pi page</a><br>	  
-	  Maximum: <A href="index.html">Search for best profile</A>
+	  <div id="FileName">
+		<H2>CSV File</H2>
+	    <input type="file" id="CVSup" accept=".csv, .CSV" hidden>
+		File in "Comma-Separated-Values format with tab height<button itype="button" onClick="Upload">CSV file</button>.<br>
+	  </div>
 	  <H2>Parameters</H2>
 	  <label>Length: <input type="number" min="0" id="Lhat" onchange="offload.getParameters()" title="length of flattened box relative to width" ></label>
 	  <input type="button" onclick="offload.download()" id="Download" value="Download" title="Download as CSV file" disabled>
@@ -43,5 +45,6 @@
 	  </div>
 	  <H2>Credits</H2>
 	  By Paul H Alfille, 2024, MIT license. <a href="https://github.com/alfille/HotApplePi_Segments" target="_blank">Project page</a>
+	  Maximum: <A href="index.html">Search for best profile</A>
   </body>
 </html>
