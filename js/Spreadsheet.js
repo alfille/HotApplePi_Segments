@@ -19,8 +19,13 @@ class InputFile {
 		this.Points = null;
 		this.Mirror = false;
 	}
+
+	Upload() {
+		document.getElementById("CSVup").click() ;
+	}
 }
 
+var objectInputFile = new InputFile() ;
 
 class Graph {
 	constructor(name) {
@@ -462,9 +467,6 @@ class Folded extends Graph {
 	}
 }
 
-function Upload() {
-	document.getElementById("CSVup").click() ;
-}
 
 onload = () => {
 	design = new Raw() ;
