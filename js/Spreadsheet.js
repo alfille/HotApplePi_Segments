@@ -18,10 +18,22 @@ class InputFile {
 		this.Width = 1.;
 		this.Points = null;
 		this.Mirror = false;
+		this.text = "" ;
 	}
 
-	Upload() {
+	Click() {
 		document.getElementById("CSVup").click() ;
+	}
+	
+	Upload() {
+		const file=document.getElementById("CSVup").files[0];
+		console.log(file);
+		const reader = new FileReader() ;
+		reader.onload = e => fetch( e.target.results)
+		.then( cont => {
+			this.text = cont;
+			console.log(this.text); }) ;
+		reader.readAsText(file);
 	}
 }
 
