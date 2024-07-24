@@ -26,14 +26,19 @@ class InputFile {
 	}
 	
 	Upload() {
-		const file=document.getElementById("CSVup").files[0];
-		console.log(file);
-		const reader = new FileReader() ;
-		reader.onload = e => fetch( e.target.results)
-		.then( cont => {
-			this.text = cont;
-			console.log(this.text); }) ;
-		reader.readAsText(file);
+		const CVSup = document.getElementById("CSVup");
+		if ( CSVup.files.length > 0 ) {
+			console.log(CSVup.files[0]);
+			const reader = new FileReader() ;
+			reader.onload = e => this.CSVparse(e.target.result) ;				
+			reader.readAsText(CSVup.files[0]);
+		}
+	}
+	
+	CSVparse( raw ) {
+		const lines = raw.split(/\n|\r\n/);
+		console.log(lines);
+		lines.forEach(l => console.log(l.split(/,| /)));
 	}
 }
 
