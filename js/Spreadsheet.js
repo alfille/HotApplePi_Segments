@@ -18,7 +18,7 @@ class InputFile {
 		this.Width = 1.;
 		this.Points = null;
 		this.Mirror = false;
-		this.text = "" ;
+		this.table = new Array() ;
 	}
 
 	Click() {
@@ -38,7 +38,9 @@ class InputFile {
 	CSVparse( raw ) {
 		const lines = raw.split(/\n|\r\n/);
 		console.log(lines);
-		lines.forEach(l => console.log(l.split(/,| /)));
+		lines.forEach( (l,i) => this.table[i]=l.split(/,| /));
+		console.log(this.table);
+		
 	}
 }
 
