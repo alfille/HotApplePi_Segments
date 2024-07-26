@@ -12,6 +12,11 @@
 	    <input type="file" id="CSVup" accept=".csv, .CSV" onChange="objectInputFile.Upload()" hidden>
 		File in "Comma-Separated-Values format with tab height<button type="button" onClick="objectInputFile.Click()">CSV file</button>.<br>
 	  </div>
+	  <div id="Table" hidden>
+		<H2>Data</H2>
+		<table width="100%" id="databable">
+		</table>
+	  </div>
 	  <H2>Parameters</H2>
 	  <label>Length: <input type="number" min="0" id="Lhat" onchange="offload.getParameters()" title="length of flattened box relative to width" ></label>
 	  <input type="button" onclick="offload.download()" id="Download" value="Download" title="Download as CSV file" disabled>

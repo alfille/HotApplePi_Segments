@@ -38,9 +38,15 @@ class InputFile {
 	CSVparse( raw ) {
 		const lines = raw.split(/\n|\r\n/);
 		console.log(lines);
-		lines.forEach( (l,i) => this.table[i]=l.split(/,| /));
-		console.log(this.table);
-		
+		lines.forEach( (l,i) =>
+			this.table[i] = l.
+			split(/,| /).
+			map( e => isNaN( e ) ? e : parseFloat(e) )
+			);
+		const max = this.table.reduce( (a,b) => Math.max(a,b.length), 0);
+		this.collength= new Array( max ).fill(0);
+		this.table.forEach( t => t.forEach( (e,i) => this.collength[i] += isNaN(e) ? 0 : 1 ) );
+		console.log(max,this.table.length,this.collength);	
 	}
 }
 
