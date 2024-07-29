@@ -19,6 +19,7 @@ class InputFile {
 		this.Points = null;
 		this.Mirror = false;
 		this.table = new Array() ;
+		this.tableview="TVall";
 	}
 
 	Click() {
@@ -30,24 +31,116 @@ class InputFile {
 		if ( CSVup.files.length > 0 ) {
 			console.log(CSVup.files[0]);
 			const reader = new FileReader() ;
-			reader.onload = e => this.CSVparse(e.target.result) ;				
+			reader.onload = e => this.CSVparse(e.target.result) ;
+			document.getElementById("Getfile").hidden=true;
+			document.getElementById("filename").innerText=CSVup.files[0].name;				
+			document.getElementById("Regetfile").hidden=false;
 			reader.readAsText(CSVup.files[0]);
 		}
 	}
 	
 	CSVparse( raw ) {
 		const lines = raw.split(/\n|\r\n/);
-		console.log(lines);
 		lines.forEach( (l,i) =>
 			this.table[i] = l.
 			split(/,| /).
 			map( e => isNaN( e ) ? e : parseFloat(e) )
 			);
-		const max = this.table.reduce( (a,b) => Math.max(a,b.length), 0);
-		this.collength= new Array( max ).fill(0);
-		this.table.forEach( t => t.forEach( (e,i) => this.collength[i] += isNaN(e) ? 0 : 1 ) );
-		console.log(max,this.table.length,this.collength);	
+		this.TableStats() ;
 	}
+	
+	TableStats() {
+		this.maxlength = this.table.reduce( (a,b) => Math.max(a,b.length), 0);
+		this.collength= new Array( this.maxlength ).fill(0);
+		this.table.forEach( t => t.forEach( (e,i) => this.collength[i] += isNaN(e) ? 0 : 1 ) );
+		this.showTable() ;
+	}
+	
+	Transpose() {
+		const pivot = new Array(this.maxlength).fill(null) ;
+		this.table.forEach( (t,i) =>
+			t.forEach( (e,j)=> {
+				if ( pivot[j]==null ) {
+					pivot[j] = new Array() ;
+				}
+				pivot[j][i] = e;
+			})
+			);
+		this.table = pivot ;
+		this.TableStats() ;
+	}
+	
+	tableView(target) {
+		if ( this.tableview != target.id ) {
+			this.tableview = target.id;
+			this.showTable() ;
+		}
+	}
+			
+	showTable() {
+		document.getElementById(this.tableview).checked=true;
+		const tab = document.getElementById("datatable");
+		tab.innerHTML="" ;
+		tab.style.borderCollapse="collapse";
+		const head = document.createElement("thead");
+		const hr = document.createElement("tr");
+		const change='onChange="objectInputFile.Check(this)"';
+		const ftitle='title="Make this column the end tab height -- f(s)"';
+		const stitle='title="Make this column the unfolded <s> dimension -- optional"';
+		this.table[0].forEach( (_,i) => {
+			const h = document.createElement("th");
+			h.innerHTML=`<label><input type="checkbox" id="f,${i}" ${change} ${ftitle}>f</label> <label><input type="checkbox" id="s,${i}" ${change} ${stitle}>s</label>`;
+			h.style.border="2px solid blue";
+			h.style.textAlign="left";
+            hr.appendChild(h);
+		});
+		head.appendChild(hr);
+		tab.appendChild(head);			
+		const body = document.createElement("tbody");
+		if ( this.tableview != "TVnone" ) {
+			this.table.slice(0,(this.tableview=="TVshort")?8:500).forEach( t => {
+				const r = document.createElement("tr");
+				t.forEach( e => {
+					const d = document.createElement("td");
+					d.appendChild( document.createTextNode( e ) );
+					d.style.border="1px solid blue";
+					r.appendChild( d ) ;
+				}) ;
+				body.appendChild( r ) ;
+			}) ;
+		}
+		tab.appendChild( body ) ;
+		document.getElementById("Table").hidden=false;
+		this.check_f=new Array();
+		this.check_s=new Array();
+		this.table[0].forEach( (_,i) => {
+			this.check_f[i] = document.getElementById(`f,${i}`);
+			this.check_s[i] = document.getElementById(`s,${i}`);
+		});
+		this.check_f[0].click();
+	}
+	
+	Check(target) {
+		const [fs,i]=target.id.split(",");
+		if ( fs=="f" ) {
+			if (this.check_f[i].checked) {
+				this.check_f.forEach( (f,j) => f.checked=(i==j) );
+				this.check_s[i].checked=false;
+			} else {
+				this.check_f[0].click() ;
+			}
+		} else {
+			if (this.check_s[i].checked) {
+				this.check_s.forEach( (s,j) => s.checked=(i==j) );
+				if ( this.check_f[i].checked ) {
+					this.check_s[i].checked=false;
+				}
+			}
+		}
+		this.f_col=this.check_f.findIndex( f=>f.checked ) ;
+		this.s_col=this.check_s.findIndex( s=>s.checked ) ;
+		console.log(this.f_col,this.s_col);
+	}	
 }
 
 var objectInputFile = new InputFile() ;

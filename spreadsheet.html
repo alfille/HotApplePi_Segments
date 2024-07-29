@@ -3,18 +3,30 @@
   <script src="js/Spreadsheet.js"></script>
   <head>
 	  <title>Hot Apple Pie Box Upload</title>
+      <link rel="icon" type="image/x-icon" href="/fav.png">
   </head>
   <body bgcolor="lightyellow">
 	  <H2>Analyze a HotApplePi box from a file.</H2>
 	  See <a href="https://github.com/alfille/HotApplePi" target="_blank">Hot Apple Pi page</a><br>	  
 	  <div id="FileName">
-		<H2>CSV File</H2>
+		<H2>CSV File <pre><span id="filename"></span></pre></H2>
 	    <input type="file" id="CSVup" accept=".csv, .CSV" onChange="objectInputFile.Upload()" hidden>
-		File in "Comma-Separated-Values format with tab height<button type="button" onClick="objectInputFile.Click()">CSV file</button>.<br>
+	    <div id="Getfile">
+			File in Comma-Separated-Values format with tab height <button type="button" onClick="objectInputFile.Click()" title="Choose csv-type local file with your data">CSV file</button>.
+		</div>
+	    <div id="Regetfile" hidden>
+			<button type="button" onClick="window.location.reload()" title="Clear all data">New CSV file</button>
+		</div>
 	  </div>
 	  <div id="Table" hidden>
-		<H2>Data</H2>
-		<table width="100%" id="databable">
+		<H2>
+			Data 
+			<label><input type="radio" name=tview" id="TVall"   onChange="objectInputFile.tableView(this)" title="Show all rows">all</label>
+			<label><input type="radio" name=tview" id="TVshort" onChange="objectInputFile.tableView(this)" title="Show just a few rows">short</label>
+			<label><input type="radio" name=tview" id="TVnone"  onChange="objectInputFile.tableView(this)" title="Hide data rows">none</label>
+			<button onClick="objectInputFile.Transpose()" title="Switch rows and columns">Transpose</button>
+		</H2>
+		<table width="100%" id="datatable">
 		</table>
 	  </div>
 	  <H2>Parameters</H2>
