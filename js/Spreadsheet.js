@@ -140,7 +140,44 @@ class InputFile {
 		this.f_col=this.check_f.findIndex( f=>f.checked ) ;
 		this.s_col=this.check_s.findIndex( s=>s.checked ) ;
 		console.log(this.f_col,this.s_col);
-	}	
+	}
+	
+	EqualDivvy(len) {
+		return Array.from( {length: len}, (_,i)=>i/(len-1) );
+	}
+	
+	Condition() {
+		const F=this.table.map(t=>t[this.f_col]).filter( (e)=>! isNaN(e)	) ;
+		
+		if (F.length < 4) {
+			console.error("F array too few values");
+			return null;
+		}
+		if ( this.s_col<0 ) {
+			console.log("No S column given. Using default spacing");
+			return {F:F,S:this.EqualDivvy( F.length )};
+		}
+
+		const S=this.table.map(t=>t[this.s_col]).filter( (e)=> !isNaN(e) );
+		if ( S.length != F.length ) {
+			console.log("S column length differs. Using default spacing");
+			return {F:F,S:this.EqualDivvy( F.length )};
+		}
+		const Sort=S.map( (s,i)=>({F:F[i],S:s}) ).sort( (a,b)=>a.S-b.S );
+		if ( Sort.slice(1).some( (sort,i)=>Sort[i].S==sort.S ) ) {
+			console.log("Duplicate S values. Using default spacing");
+			return {F:F,S:this.EqualDivvy( F.length )};
+		}
+		// Shift S to 0->1 and scale F
+		const start = Sort[0].S;
+		const end = Sort[Sort.length-1].S ;
+		return {
+			F: Sort.map( sort => sort.F/(end-start) ),
+			S: Sort.map( sort => (sort.S-start)/(end-start) )
+		};
+	}
+				
+			
 }
 
 var objectInputFile = new InputFile() ;
