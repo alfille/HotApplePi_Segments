@@ -633,7 +633,6 @@ class Offload {
 	constructor() {
 		this.seq = 0 ; // sequence to keep track of changes
 		this.W = new Worker("js/Spreadsheet_worker.js") ;
-		this.showParameters() ;
 		this.new_start = true ;
 		this.u = null ;
 		this.v = null ;
@@ -648,26 +647,6 @@ class Offload {
 		});
 	}
 	
-	showParameters() {
-		Object.entries(Settings).forEach( e => {
-			const id = document.getElementById( e[0] ) ;
-			if ( id !== null ) {
-				id.value = e[1] ;
-			}
-		});
-	}
-	
-	getParameters() {
-		Object.entries(Settings).forEach( e => {
-			const id = document.getElementById( e[0] ) ;
-			if ( id !== null ) {
-				Settings[e[0]] = Number(id.value) ;
-			}
-		});
-		this.new_start = true ;
-		this.run() ;
-	}
-		
 	run() {
 		this.more.disabled=true ;
 		this.down.disabled=true ;
