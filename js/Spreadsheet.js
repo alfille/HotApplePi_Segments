@@ -139,6 +139,11 @@ class InputFile {
 		}
 		this.f_col=this.check_f.findIndex( f=>f.checked ) ;
 		this.s_col=this.check_s.findIndex( s=>s.checked ) ;
+		if ( this.s_col[0] != 0. ) {
+			// add initial zero
+			this.s_col.unshift( 0. ) ;
+			this.f_col.unshift( 0. ) ;
+		}
 		console.log(this.f_col,this.s_col);
 	}
 	
@@ -175,9 +180,7 @@ class InputFile {
 			F: Sort.map( sort => sort.F/(end-start) ),
 			S: Sort.map( sort => (sort.S-start)/(end-start) )
 		};
-	}
-				
-			
+	}			
 }
 
 var objectInputFile = new InputFile() ;

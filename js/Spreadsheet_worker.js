@@ -118,7 +118,7 @@ class Generation {
 class Run {
 	constructor () {
 		this.gen = null ;
-		this.W = new Worker("Plotter.js") ; // subworker
+		this.W = new Worker("Spread_plotter.js") ; // subworker
 	}
 	
 	start() {
